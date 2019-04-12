@@ -7,6 +7,10 @@ class Position {
     getUpPosition() {
         return new Position(this.x, this.y - 1);
     }
+
+    getRightPosition() {
+        return new Position(this.x + 1, this.y);
+    }
 }
 
 class GameObject {
@@ -63,6 +67,7 @@ class Game {
     constructor() {
         this.map = new Map(4, 4);
         this.robot = new MovingObject(null, "R", this.map);
+        this.engine = new Engine(this);
     }
 
     start(startPosition) {
@@ -71,8 +76,15 @@ class Game {
     }
 
     onCommandUp() {
-        // this.history.push(this.state);
         this.robot.move(this.robot.position.getUpPosition());
+        this.render();
+    }
+
+    onCommandRight() {
+        this.robot.move(this.robot.position.getRightPosition());
+        if (this.robot.position.x === this.map.width - 1) {
+            this.map.width += 1;
+        }
         this.render();
     }
 
@@ -82,18 +94,42 @@ class Game {
     }
     
     render() {
-        let mapCells = document.querySelectorAll('.map-cell');
-        let robotIndex = this.map.positionToIndex(this.robot.position);
-        mapCells.forEach((aCell, i) => {
-            if (i === robotIndex) {
-                mapCells[i].innerHTML = this.robot.icon;
-            } else {
-                mapCells[i].innerHTML = '';
-            }
-        })
+        this.engine.render();
     }
 }
 
+class Engine {
+    constructor(state) {
+        this.state = state;
+    }
+
+    toDom() {
+        let gameMap = document.createElement("div");
+        gameMap.className += " game-map";
+        gameMap.setAttribute("id", "game-map");
+
+        for (let y = 0; y < this.state.map.height; y++) {
+            let row = document.createElement("div");
+            row.className += " map-row";
+            gameMap.appendChild(row);
+            for (let x = 0; x < this.state.map.width; x++) {
+                let cell = document.createElement("div");
+                cell.className += " map-cell"
+                if (this.state.robot.position.x === x && this.state.robot.position.y === y) {
+                    cell.innerHTML = this.state.robot.icon;
+                }
+                row.appendChild(cell);
+            }
+        }
+
+        return gameMap;
+    }
+
+    render() {
+        let root = document.getElementById("game-map");
+        root.replaceWith(this.toDom());
+    }
+}
 
 
 let game = new Game();
