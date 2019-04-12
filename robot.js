@@ -95,12 +95,14 @@ class Game {
     
     render() {
         this.engine.render();
+        this.engine.render();
     }
 }
 
 class Engine {
     constructor(state) {
         this.state = state;
+        this.lastSate = {};
     }
 
     toDom() {
@@ -125,7 +127,17 @@ class Engine {
         return gameMap;
     }
 
+    stateChanged() {
+        return this.lastSate !== this.state;
+    }
+
     render() {
+        if (!this.stateChanged()) {
+            return;
+        }
+
+        this.lastSate = this.state;
+
         let root = document.getElementById("game-map");
         root.replaceWith(this.toDom());
     }
