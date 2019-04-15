@@ -36,6 +36,10 @@ class MovingObject extends GameObject {
             return false;
         }
     }
+    moveLeft() {
+            this.history.push(this.position);
+            this.position.x -= 1;
+    }
 
     reverse() {
         this.position = this.history.pop();
@@ -88,6 +92,11 @@ class Game {
         this.render();
     }
 
+    onCommandLeft() {
+        this.robot.moveLeft();
+        this.render();
+    }
+
     onCommandBack() {
         this.robot.reverse();
         this.render();
@@ -128,7 +137,10 @@ class Engine {
     }
 
     stateChanged() {
-        return this.lastSate !== this.state;
+        if (!this.lastSate.robot) {
+            return true;
+        } 
+        return this.lastSate.robot.position !== this.state.robot.position;
     }
 
     render() {
@@ -136,7 +148,10 @@ class Engine {
             return;
         }
 
-        this.lastSate = this.state;
+        this.lastSate = {
+            ...this.state,
+            robot: {...this.state.robot}
+        };
 
         let root = document.getElementById("game-map");
         root.replaceWith(this.toDom());
