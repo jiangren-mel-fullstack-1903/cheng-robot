@@ -1,32 +1,23 @@
 * {
-    box-sizing: border-box;
-  }
-  
-  .game-board {
-    width: 400px;
-    height: 600px;
-  }
-  
-  .game-map {
-    width: 200px;
-    height: 224px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .map-row {
-    flex-grow: 1;
-    display: flex;
-    width: auto;
-    height: auto;
-  }
-  
-  .map-cell {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
-    border: 2px solid black;
-  }
+  box-sizing: border-box;
+}
+
+.game-map {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-row {
+  display: flex;
+  width: auto;
+  height: auto;
+}
+
+.map-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+}
