@@ -1,17 +1,20 @@
-function createPosition(x, y) {
+function Position(x, y) {
     this.x = x;
     this.y = y;
-    this.toIndex = function(mapWidth) {
-        return this.x + this.y * mapWidth;
-    };
 }
 
-function createMovingObject(position, icon) {
+Position.prototype = {
+    toIndex: function(mapWidth) {
+        return this.x + this.y * mapWidth;
+    }
+}
+
+function MovingObject(position, icon) {
     this.position = position;
     this.icon = icon;
 }
 
-function createGame(mapWidth, mapHeight, robot) {
+function Game(mapWidth, mapHeight, robot) {
     this.mapWidth = mapWidth;
     this.mapHeight = mapHeight;
     this.robot = robot;
@@ -23,7 +26,7 @@ function createGame(mapWidth, mapHeight, robot) {
     
     this.onCommandUp = function() {
         this.history.push(this.robot.position);
-        var targetPosition = new createPosition(this.robot.position.x, this.robot.position.y - 1);
+        var targetPosition = new Position(this.robot.position.x, this.robot.position.y - 1);
         this.move(targetPosition);
     };
 
@@ -72,9 +75,9 @@ function createGame(mapWidth, mapHeight, robot) {
     }
 }
 
-var initPosition = new createPosition(0, 0);
-var robot = new createMovingObject(initPosition, "R");
-var game = new createGame(4, 4, robot)
+var initPosition = new Position(0, 0);
+var robot = new MovingObject(initPosition, "R");
+var game = new Game(4, 4, robot)
 
 game.init();
 game.render();
