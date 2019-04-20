@@ -71,6 +71,7 @@ class Game {
     constructor() {
         this.map = new Map(4, 4);
         this.robot = new MovingObject(null, "R", this.map);
+        this.dump = 100000;
         this.engine = new Engine(this);
     }
 
@@ -104,7 +105,7 @@ class Game {
     
     render() {
         this.engine.render();
-        this.engine.render();
+        // this.engine.render();
     }
 }
 
@@ -131,6 +132,12 @@ class Engine {
                 }
                 row.appendChild(cell);
             }
+        }
+
+        for (let i = 0; i < this.state.dump; i++) {
+            let aSpan = document.createElement("span");
+            aSpan.setAttribute("background-color", "blue");
+            gameMap.appendChild(aSpan);
         }
 
         return gameMap;
