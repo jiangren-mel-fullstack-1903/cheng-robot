@@ -46,7 +46,7 @@ class MovingObject extends GameObject {
     }
 }
 
-class Map {
+class GameMap {
     constructor(width, height) {
         this.width = width;
         this.height = height;
@@ -67,105 +67,102 @@ class Map {
     }
 }
 
-class Game {
-    constructor() {
-        this.map = new Map(4, 4);
-        this.robot = new MovingObject(null, "R", this.map);
-        this.dump = 100000;
-        this.engine = new Engine(this);
+class Game extends React.Component {
+    constructor(props) {
+        super(props);
+        let map = new GameMap(4, 4);
+        this.state = {
+            map: map,
+            robot: new MovingObject(new Position(0, 3), "R", map),
+            dump: 100000
+        } 
     }
 
     start(startPosition) {
-        this.robot.move(startPosition);
+        this.state.robot.move(startPosition);
         this.render();
     }
 
-    onCommandUp() {
-        this.robot.move(this.robot.position.getUpPosition());
-        this.render();
+    onCommandUp = () => {
+        this.state.robot.move(this.state.robot.position.getUpPosition());
+        // let immutableObj = {...this.state.robot};
+        // immutableObj.__proto__ = MovingObject.prototype;
+        // immutableObj.move(immutableObj.position.getUpPosition());
+        // this.setState({
+        //     robot: immutableObj
+        // })
     }
 
-    onCommandRight() {
-        this.robot.move(this.robot.position.getRightPosition());
-        if (this.robot.position.x === this.map.width - 1) {
-            this.map.width += 1;
+    onCommandRight = () => {
+        this.state.robot.move(this.state.robot.position.getRightPosition());
+        if (this.state.robot.position.x === this.state.map.width - 1) {
+            this.state.map.width += 1;
         }
-        this.render();
     }
 
-    onCommandLeft() {
-        this.robot.moveLeft();
-        this.render();
+    onCommandLeft = () => {
+        this.state.robot.moveLeft();
     }
 
-    onCommandBack() {
-        this.robot.reverse();
-        this.render();
+    onCommandBack = () => {
+        this.state.robot.reverse();
     }
     
     render() {
-        this.engine.render();
-        // this.engine.render();
-    }
-}
-
-class Engine {
-    constructor(state) {
-        this.state = state;
-        this.lastSate = {};
-    }
-
-    toDom() {
-        let gameMap = document.createElement("div");
-        gameMap.className += " game-map";
-        gameMap.setAttribute("id", "game-map");
-
+        let rows = [];
         for (let y = 0; y < this.state.map.height; y++) {
-            let row = document.createElement("div");
-            row.className += " map-row";
-            gameMap.appendChild(row);
+            let cells = [];
             for (let x = 0; x < this.state.map.width; x++) {
-                let cell = document.createElement("div");
-                cell.className += " map-cell"
+                let theIcon = '';
                 if (this.state.robot.position.x === x && this.state.robot.position.y === y) {
-                    cell.innerHTML = this.state.robot.icon;
+                    theIcon = this.state.robot.icon;
                 }
-                row.appendChild(cell);
+                let cell = React.createElement('div', {className: 'map-cell', key: x}, theIcon);
+                cells.push(cell);
             }
+            rows.push(React.createElement('div', {className: 'map-row', key: y}, cells));
         }
 
+        let spans = [];
         for (let i = 0; i < this.state.dump; i++) {
-            let aSpan = document.createElement("span");
-            aSpan.setAttribute("background-color", "blue");
-            gameMap.appendChild(aSpan);
+            let aSpan = React.createElement('span', {key: i});
+            spans.push(aSpan);
         }
 
-        return gameMap;
-    }
+        let gameMap = React.createElement('div', {
+            className: 'game-map',
+            id: 'game-map'
+        }, rows, spans);
 
-    stateChanged() {
-        if (!this.lastSate.robot) {
-            return true;
-        } 
-        return this.lastSate.robot.position !== this.state.robot.position;
-    }
+        // buttons
+        let buttonUp = React.createElement('button', {
+            onClick: this.onCommandUp
+        }, '^')
 
-    render() {
-        if (!this.stateChanged()) {
-            return;
-        }
+        let buttonBack = React.createElement('button', {
+            onClick: this.onCommandBack
+        }, '<-')
 
-        this.lastSate = {
-            ...this.state,
-            robot: {...this.state.robot}
-        };
+        let controlPanel = React.createElement('div', {className: 'control-panel'}, buttonUp, buttonBack);
 
-        let root = document.getElementById("game-map");
-        root.replaceWith(this.toDom());
+        let gameBoard = React.createElement('div', {className: 'game-board'}, gameMap, controlPanel);
+
+        return gameBoard;
     }
 }
+// class Hello extends React.Component {
+//     render() {
+//       return React.createElement('div', null, `Hello ${this.props.toWhat}`);
+//     }
+//   }
+const domContainer = document.querySelector('.game-board');
+ReactDOM.render(
+    React.createElement(Game, null, null), 
+    domContainer
+);
 
 
-let game = new Game();
-
-game.start(new Position(0, 3));
+// ReactDOM.render(
+//     React.createElement(Hello, {toWhat: 'World'}, null),
+//     domContainer
+//   );
