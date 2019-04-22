@@ -84,20 +84,22 @@ class Game extends React.Component {
     }
 
     onCommandUp = () => {
-        this.state.robot.move(this.state.robot.position.getUpPosition());
-        // let immutableObj = {...this.state.robot};
-        // immutableObj.__proto__ = MovingObject.prototype;
-        // immutableObj.move(immutableObj.position.getUpPosition());
-        // this.setState({
-        //     robot: immutableObj
-        // })
+        // this.state.robot.move(this.state.robot.position.getUpPosition());
+        let immutableObj = {...this.state.robot};
+        immutableObj.__proto__ = MovingObject.prototype;
+        immutableObj.move(immutableObj.position.getUpPosition());
+        this.setState({
+            robot: immutableObj
+        })
     }
 
     onCommandRight = () => {
-        this.state.robot.move(this.state.robot.position.getRightPosition());
-        if (this.state.robot.position.x === this.state.map.width - 1) {
-            this.state.map.width += 1;
-        }
+        let immutableObj = {...this.state.robot};
+        immutableObj.__proto__ = MovingObject.prototype;
+        immutableObj.move(immutableObj.position.getRightPosition());
+        this.setState({
+            robot: immutableObj
+        })
     }
 
     onCommandLeft = () => {
@@ -138,12 +140,15 @@ class Game extends React.Component {
         let buttonUp = React.createElement('button', {
             onClick: this.onCommandUp
         }, '^')
+        let buttonRight = React.createElement('button', {
+            onClick: this.onCommandRight
+        }, '>>')
 
         let buttonBack = React.createElement('button', {
             onClick: this.onCommandBack
         }, '<-')
 
-        let controlPanel = React.createElement('div', {className: 'control-panel'}, buttonUp, buttonBack);
+        let controlPanel = React.createElement('div', {className: 'control-panel'}, buttonUp, buttonRight, buttonBack);
 
         let gameBoard = React.createElement('div', {className: 'game-board'}, gameMap, controlPanel);
 
