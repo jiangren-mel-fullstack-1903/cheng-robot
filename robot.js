@@ -72,7 +72,6 @@ class Game {
         this.map = new Map(4, 4);
         this.robot = new MovingObject(null, "R", this.map);
         this.dump = 100000;
-        this.engine = new Engine(this);
     }
 
     start(startPosition) {
@@ -104,64 +103,7 @@ class Game {
     }
     
     render() {
-        this.engine.render();
-        // this.engine.render();
-    }
-}
-
-class Engine {
-    constructor(state) {
-        this.state = state;
-        this.lastSate = {};
-    }
-
-    toDom() {
-        let gameMap = document.createElement("div");
-        gameMap.className += " game-map";
-        gameMap.setAttribute("id", "game-map");
-
-        for (let y = 0; y < this.state.map.height; y++) {
-            let row = document.createElement("div");
-            row.className += " map-row";
-            gameMap.appendChild(row);
-            for (let x = 0; x < this.state.map.width; x++) {
-                let cell = document.createElement("div");
-                cell.className += " map-cell"
-                if (this.state.robot.position.x === x && this.state.robot.position.y === y) {
-                    cell.innerHTML = this.state.robot.icon;
-                }
-                row.appendChild(cell);
-            }
-        }
-
-        for (let i = 0; i < this.state.dump; i++) {
-            let aSpan = document.createElement("span");
-            aSpan.setAttribute("background-color", "blue");
-            gameMap.appendChild(aSpan);
-        }
-
-        return gameMap;
-    }
-
-    stateChanged() {
-        if (!this.lastSate.robot) {
-            return true;
-        } 
-        return this.lastSate.robot.position !== this.state.robot.position;
-    }
-
-    render() {
-        if (!this.stateChanged()) {
-            return;
-        }
-
-        this.lastSate = {
-            ...this.state,
-            robot: {...this.state.robot}
-        };
-
-        let root = document.getElementById("game-map");
-        root.replaceWith(this.toDom());
+        return this.robot.icon + ' ' + this.robot.position.x + ' ' + this.robot.position.y;
     }
 }
 
@@ -169,3 +111,23 @@ class Engine {
 let game = new Game();
 
 game.start(new Position(0, 3));
+
+
+var stdin = process.openStdin();
+
+stdin.addListener("data", function(d) {
+    // note:  d is an object, and when converted to a string it will
+    // end with a linefeed.  so we (rather crudely) account for that  
+    // with toString() and then trim() 
+    let command = d.toString().trim();
+
+    if (command === 'start') {
+        game.start(new Position(0, 3));
+    } else if (command === 'up') {
+        game.onCommandUp();
+    } else if (command === 'right') {
+        game.onCommandRight();
+    } else if (command === 'report') {
+        console.log(game.render());
+    }
+});
