@@ -1,0 +1,23 @@
+{
+  "name": "cheng-robot",
+  "version": "1.0.0",
+  "description": "* The application is a simulation of a robot moving on a square tabletop, of dimensions 4 units x 4 units.\r * There are no other obstructions on the table surface.\r * The robot is free to roam around the surface of the table, but must be prevented from falling to destruction. Any movement that would result in the robot falling from the table must be prevented, however further valid movement commands must still be allowed.",
+  "main": "robot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node robot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jiangren-mel-fullstack-1903/cheng-robot.git"
+  },
+  "author": "Cheng Chang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jiangren-mel-fullstack-1903/cheng-robot/issues"
+  },
+  "homepage": "https://github.com/jiangren-mel-fullstack-1903/cheng-robot#readme",
+  "dependencies": {
+    "@types/node": "^11.13.8"
+  }
+}
