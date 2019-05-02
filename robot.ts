@@ -1,40 +1,33 @@
-export class Position {
+class Position {
     x: number;
     y: number;
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
     }
-
-    getUpPosition() {
-        return new Position(this.x, this.y - 1);
-    }
-
-    getRightPosition() {
-        return new Position(this.x + 1, this.y);
-    }
 }
 
-export class GameObject {
+interface GameObject {
     position: Position;
-    icon: String;
-    map: GameMap
-    constructor(position: Position, icon: String, map: GameMap) {
-        this.position = position;
-        this.icon = icon;
-        this.map = map;
-    }
+    map: GameMap;
+    display(): void;
 }
 
-export class MovingObject extends GameObject {
-    history: Position[];
-    constructor(position: Position, icon: String, map: GameMap) {
-        super(position, icon, map);
-        this.history = [];
+interface Movable {
+    moveLeft(): void;
+    moveRight(): void;
+    moveUp(): void;
+    moveDown(): void;
+}
+
+class MovingObject implements GameObject, Movable {
+    position: Position;
+    map: GameMap;
+    constructor(map: GameMap) {
+        this.map = map;
     }
     move(newPosition: Position) {
         if (this.map.availablePosition(newPosition)) {
-            this.history.push(this.position);
             this.position = newPosition;
             // this.state = Object.assign({}, this.state, {robotPosition: newPosition});
             return true;
@@ -42,17 +35,58 @@ export class MovingObject extends GameObject {
             return false;
         }
     }
-    moveLeft() {
-            this.history.push(this.position);
-            this.position.x -= 1;
-    }
+    display() {}
+    moveLeft() {}
+    moveRight() {}
+    moveUp() {}
+    moveDown() {}
+}
 
-    reverse() {
-        this.position = this.history.pop();
+class Robot extends MovingObject {
+    display() {
+        return 'R';
+    }
+    moveLeft() {
+        let targetPosition = {...this.position, x: this.position.x - 1};
+        this.move(targetPosition);
+    }
+    moveRight() {
+        let targetPosition = {...this.position, x: this.position.x + 1};
+        this.move(targetPosition);
+    }
+    moveUp() {
+        let targetPosition = {...this.position, y: this.position.y - 1};
+        this.move(targetPosition);
+    }
+    moveDown() {
+        let targetPosition = {...this.position, y: this.position.y + 1};
+        this.move(targetPosition);
     }
 }
 
-export class GameMap {
+class Horse extends MovingObject {
+    display() {
+        return 'H';
+    }
+    moveLeft() {
+        let targetPosition = {...this.position, x: this.position.x - 2};
+        this.move(targetPosition);
+    }
+    moveRight() {
+        let targetPosition = {...this.position, x: this.position.x + 2};
+        this.move(targetPosition);
+    }
+    moveUp() {
+        let targetPosition = {...this.position, y: this.position.y - 2};
+        this.move(targetPosition);
+    }
+    moveDown() {
+        let targetPosition = {...this.position, y: this.position.y + 2};
+        this.move(targetPosition);
+    }
+}
+
+class GameMap {
     width: number;
     height: number;
     constructor(width: number, height: number) {
@@ -75,44 +109,35 @@ export class GameMap {
     }
 }
 
-export class Game {
+class Game {
     map: GameMap;
     robot: MovingObject;
     constructor() {
         this.map = new GameMap(4, 4);
-        this.robot = new MovingObject(null, "R", this.map);
+        this.robot = new Robot(this.map);
     }
 
     start(startPosition: Position) {
         this.robot.move(startPosition);
-        this.render();
     }
 
     onCommandUp() {
-        this.robot.move(this.robot.position.getUpPosition());
-        this.render();
+        this.robot.moveUp();
     }
 
     onCommandRight() {
-        this.robot.move(this.robot.position.getRightPosition());
+        this.robot.moveRight();
         if (this.robot.position.x === this.map.width - 1) {
             this.map.width += 1;
         }
-        this.render();
     }
 
     onCommandLeft() {
         this.robot.moveLeft();
-        this.render();
-    }
-
-    onCommandBack() {
-        this.robot.reverse();
-        this.render();
     }
     
     render() {
-        return this.robot.icon + ' ' + this.robot.position.x + ' ' + this.robot.position.y;
+        return this.robot.display() + ' ' + this.robot.position.x + ' ' + this.robot.position.y;
     }
 }
 
@@ -127,7 +152,11 @@ let stdin = process.openStdin();
 stdin.addListener("data", function(d) {
     let command = d.toString().trim();
 
-    if (command === 'start') {
+    if (command === 'start robot') {
+        game.robot = new Robot(game.map);
+        game.start(new Position(0, 3));
+    } else if (command === 'start horse') {
+        game.robot = new Horse(game.map);
         game.start(new Position(0, 3));
     } else if (command === 'up') {
         game.onCommandUp();

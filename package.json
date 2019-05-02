@@ -5,7 +5,7 @@
   "main": "robot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node robot.js"
+    "start": "tsc robot.ts && node robot.js"
   },
   "repository": {
     "type": "git",
